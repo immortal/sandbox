@@ -4,8 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
+	"syscall"
 	"time"
 )
 
@@ -23,6 +25,18 @@ func init() {
 		fmt.Println("forking in PID: ", cmd.Process.Pid)
 		os.Exit(0)
 	}
+
+	_ = syscall.Umask(0)
+	os.Chdir("/")
+
+	//	create a new SID for the child process
+	_, s_errno := syscall.Setsid()
+	if s_errno != nil {
+		log.Printf("Error: syscall.Setsid errno: %d", s_errno)
+	}
+
+	os.Chdir("/")
+
 }
 
 func main() {
@@ -32,6 +46,6 @@ func main() {
 	wd, _ := os.Getwd()
 
 	pids := fmt.Sprintf("parent: %d, child: %d: cwd: %v", parent, child, wd)
-	_ = ioutil.WriteFile("pids", []byte(pids), 0644)
+	_ = ioutil.WriteFile("/tmp/pids", []byte(pids), 0644)
 	time.Sleep(100 * time.Second)
 }
