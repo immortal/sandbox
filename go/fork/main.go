@@ -33,7 +33,7 @@ func main() {
 		}
 		defer r.Close()
 		cmdToRun := "/bin/sleep"
-		args := []string{"sleep", "30"}
+		args := []string{"name-of-the-cmd", "30"}
 		procAttr := new(os.ProcAttr)
 		procAttr.Files = []*os.File{nil, w, os.Stderr}
 		process, err := os.StartProcess(cmdToRun, args, procAttr)
