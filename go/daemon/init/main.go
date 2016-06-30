@@ -26,17 +26,14 @@ func init() {
 		os.Exit(0)
 	}
 
-	_ = syscall.Umask(0)
 	os.Chdir("/")
-
+	_ = syscall.Umask(0)
 	//	create a new SID for the child process
 	_, s_errno := syscall.Setsid()
 	if s_errno != nil {
 		log.Printf("Error: syscall.Setsid errno: %d", s_errno)
 	}
-
-	os.Chdir("/")
-
+	fmt.Println("Parent PID: ", os.Getppid())
 }
 
 func main() {
@@ -47,5 +44,5 @@ func main() {
 
 	pids := fmt.Sprintf("parent: %d, child: %d: cwd: %v", parent, child, wd)
 	_ = ioutil.WriteFile("/tmp/pids", []byte(pids), 0644)
-	time.Sleep(100 * time.Second)
+	time.Sleep(60 * time.Second)
 }
