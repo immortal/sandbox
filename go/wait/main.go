@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -24,6 +25,7 @@ func main() {
 	err = process.Signal(syscall.Signal(0))
 	for err == nil {
 		err = process.Signal(syscall.Signal(0))
+		time.Sleep(500 * time.Millisecond)
 	}
 	fmt.Println(err)
 }
