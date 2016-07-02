@@ -5,7 +5,6 @@ import (
 	"os"
 	"strconv"
 	"syscall"
-	"time"
 )
 
 func main() {
@@ -24,10 +23,8 @@ func main() {
 	// for the given pid, regardless of whether the process exists.
 	process, _ := os.FindProcess(int(pid))
 
-	err = process.Signal(syscall.Signal(0))
-	for err == nil {
-		err = process.Signal(syscall.Signal(0))
-		time.Sleep(500 * time.Millisecond)
+	err = syscall.PtraceAttach(process.Pid)
+	if err != nil {
+		fmt.Printf("err: %s", err)
 	}
-	fmt.Println(err)
 }
