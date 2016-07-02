@@ -23,9 +23,10 @@ func main() {
 
 	reader := bufio.NewReader(file)
 
-	line, err := reader.ReadString(8)
+	line, err := reader.ReadString(1)
+
 	for err != io.EOF {
 		fmt.Print(line)
-		line, err = reader.ReadString(8)
+		line, err = reader.ReadString(1)
 	}
 }
