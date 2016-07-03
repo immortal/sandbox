@@ -54,7 +54,6 @@ func main() {
 	//	}
 
 	// wait for events
-	//Loop:
 	for {
 		// create kevent
 		events := make([]syscall.Kevent_t, 1)
@@ -67,16 +66,13 @@ func main() {
 		if err != nil {
 			log.Println("Error creating kevent")
 		}
+		// check if there was an event
+		for i := 0; i < n; i++ {
+			log.Printf("Event [%d] -> %+v data: %#v", i, events[i], events[i].Data)
+		}
 		if n > 0 {
 			break
 		}
-		//// check if there was an event
-		//for i := 0; i < n; i++ {
-		//// log
-		//log.Printf("Event [%d] -> %+v", i, events[i])
-		//break Loop
-		//}
-
 	}
 
 	fmt.Println("fin")
