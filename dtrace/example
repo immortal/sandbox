@@ -1,0 +1,115 @@
+#!/usr/sbin/dtrace -s
+
+syscall::kevent:entry
+/execname == "tcp"/
+{
+        self->kevent = arg0;
+        printf("tid=%d", tid);
+}
+
+syscall::kevent:return
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d n=%d errno=%d", tid, self->kevent, arg0, errno);
+}
+
+syscall::socket:entry
+/execname == "tcp"/
+{
+        printf("tid=%d", tid);
+}
+
+syscall::socket:return
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d s=%d errno=%d", tid, arg0, arg1, errno);
+}
+
+syscall::connect:entry
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d", tid, arg0);
+        self->connect = arg0;
+}
+
+syscall::connect:return
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d errno=%d", tid, self->connect, errno);
+}
+
+syscall::listen:entry
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d", tid, arg0);
+        self->listen = arg0;
+}
+syscall::listen:return
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d errno=%d", tid, self->listen, errno);
+}
+
+syscall::accept:entry
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d", tid, arg0);
+        self->accept = arg0;
+}
+
+syscall::accept:return
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d s=%d errno=%d", tid, self->accept, arg1, errno);
+}
+
+syscall::getsockopt:entry
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d", tid, arg0);
+        self->getsockopt = arg0;
+}
+
+syscall::getsockopt:return
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d errno=%d", tid, self->getsockopt, errno);
+}
+
+syscall::read:entry
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d", tid, arg0);
+        self->read = arg0;
+}
+
+syscall::read:return
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d n=%d errno=%d", tid, self->read, arg0, errno);
+}
+syscall::write:entry
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d", tid, arg0);
+        self->write = arg0;
+}
+
+syscall::write:return
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d n=%d errno=%d", tid, self->write, arg0, errno);
+}
+
+syscall::close:entry
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d", tid, arg0);
+        self->close = arg0;
+}
+
+syscall::close:return
+/execname == "tcp"/
+{
+        printf("tid=%d s=%d errno=%d", tid, self->close, errno);
+}
