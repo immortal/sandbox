@@ -1,32 +1,33 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 )
 
 func main() {
 	cmd := exec.Command("/tmp/stdout")
-	stdout := new(bytes.Buffer)
-	stderr := new(bytes.Buffer)
 
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		panic(err)
+	}
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		panic(err)
+	}
 
 	if err := cmd.Start(); err != nil {
 		panic(err)
 	}
 
-	if err := cmd.Wait(); err != nil {
-		panic(err)
-	}
+	defer cmd.Wait()
 
-	in := bufio.NewScanner(io.MultiReader(stdout, stderr))
-	for in.Scan() {
-		fmt.Println(in.Text())
-	}
+	// Non-blockingly echo command output to terminal
+	go io.Copy(os.Stdout, stdout)
+	go io.Copy(os.Stderr, stderr)
 
+	fmt.Println("...")
 }
