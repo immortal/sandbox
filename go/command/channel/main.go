@@ -47,8 +47,8 @@ func run(c []string, ch chan<- error) {
 	}
 	go out(stdout)
 	go out(stderr)
+
 	ch <- cmd.Wait()
-	return
 }
 
 func main() {
@@ -64,7 +64,7 @@ func main() {
 	for {
 		select {
 		case err := <-status:
-			fmt.Printf("Status: %#v\n", err)
+			fmt.Printf("Status: %#v\n", err.Error())
 			time.Sleep(1 * time.Second)
 			run(os.Args, status)
 		}
