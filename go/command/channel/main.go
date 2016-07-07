@@ -47,8 +47,6 @@ func run(c []string, ch chan<- error) chan<- error {
 	}
 	go out(stdout)
 	go out(stderr)
-	//	ch <- fmt.Errorf("test")
-	//	return ch
 	ch <- cmd.Wait()
 	return ch
 }
@@ -65,10 +63,10 @@ func main() {
 
 	for {
 		select {
-		case <-status:
-			fmt.Printf("Status: %#v\n", status)
-			return
+		case err := <-status:
+			fmt.Printf("Status: %#v\n", err)
+			time.Sleep(1 * time.Second)
+			run(os.Args, status)
 		}
 	}
-
 }
