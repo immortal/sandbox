@@ -29,26 +29,26 @@ func out(p io.ReadCloser) {
 	}
 }
 
-func run(c []string, ch chan<- error) chan<- error {
+func run(c []string, ch chan<- error) {
 	cmd := exec.Command(c[1], c[2:]...)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		ch <- err
-		return ch
+		return
 	}
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		ch <- err
-		return ch
+		return
 	}
 	if err := cmd.Start(); err != nil {
 		ch <- err
-		return ch
+		return
 	}
 	go out(stdout)
 	go out(stderr)
 	ch <- cmd.Wait()
-	return ch
+	return
 }
 
 func main() {
