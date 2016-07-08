@@ -32,7 +32,7 @@ func main() {
 		Udata:  nil,
 	}
 
-Loop:
+	//Loop:
 	// wait for events
 	for {
 		// create kevent
@@ -51,7 +51,10 @@ Loop:
 			// Fflags:17
 			if events[i].Fflags == syscall.NOTE_DELETE || events[i].Fflags == 17 {
 				print("deleted")
-				break Loop
+				//				break Loop
+			}
+			if n > 0 {
+				return
 			}
 		}
 	}
