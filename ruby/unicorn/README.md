@@ -5,3 +5,7 @@ Create counter.txt:
 Run:
 
     bundle exec unicorn -c unicorn.rb
+
+Immortalize it:
+
+    $ immortal -p ./unicorn.pid bundle exec unicorn -c unicorn.rb
