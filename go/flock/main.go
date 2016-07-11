@@ -13,7 +13,7 @@ func main() {
 		fmt.Printf("Create: %s\n", err)
 		return
 	}
-	err = syscall.Flock(int(file.Fd()), syscall.LOCK_EX+syscall.LOCK_NB)
+	err = syscall.Flock(int(file.Fd()), syscall.LOCK_EX)
 	if err != nil {
 		file.Close()
 		fmt.Printf("Flock: %s\n", err)
