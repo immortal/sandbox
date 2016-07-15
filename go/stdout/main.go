@@ -14,7 +14,7 @@ func main() {
 		} else {
 			fmt.Printf("STDOUT i: %d\n", i)
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(time.Second)
 	}
 
 }
