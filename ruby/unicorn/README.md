@@ -13,3 +13,7 @@ Immortalize it:
 Test:
 
     $ ./immortal -l /tmp/test.log -logger "logger -t unicorn" bundle exec unicorn -c unicorn.rb
+
+Follow pid:
+
+    $ ./immortal -l /tmp/test.log -logger "logger -t unicorn" -p ./unicorn.pid  bundle exec unicorn -c unicorn.rb
