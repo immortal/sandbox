@@ -1,0 +1,9 @@
+[package]
+name = "immortal"
+version = "0.1.0"
+
+[dependencies]
+clap = "2"
+getopts = "0.2"
+rustc-serialize = "0.3"
+time = "0.1"
