@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
+	//	"fmt"
 	"os/exec"
 )
 
 func main() {
-	done := make(chan error) // buffer because goroutine might write to done<- before main goroutine starts to wait on <-done
+	done := make(chan error, 1) // buffer because goroutine might write to done<- before main goroutine starts to wait on <-done
 	//	done <- fmt.Errorf("2")
 	cmd := exec.Command("ls")
 	go func() {
@@ -16,6 +16,7 @@ func main() {
 		default:
 		}
 	}()
-	err := <-done
-	fmt.Println(err)
+	// don't panic if buffered
+	//	err := <-done
+	//	fmt.Println(err)
 }
