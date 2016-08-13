@@ -23,6 +23,8 @@ func main() {
 		panic(err)
 	}
 
+	println(cmd.Process.Pid)
+
 	defer cmd.Wait()
 
 	// Non-blockingly echo command output to terminal
