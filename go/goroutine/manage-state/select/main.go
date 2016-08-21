@@ -14,7 +14,7 @@ type test struct {
 
 func (self *test) run() {
 
-	start := time.After(2000 * time.Millisecond)
+	start := time.After(time.Duration(1) * time.Second)
 	for {
 		select {
 		case ch := <-self.ch:
