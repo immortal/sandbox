@@ -30,17 +30,19 @@ type Daemon struct {
 }
 
 func (d *Daemon) Run(p Process) {
-	fmt.Println(p.Pid())
+	d.process = NewProcess()
 }
 
 func main() {
 
-	d := Daemon{
-		process: NewProcess(),
-	}
+	d := &Daemon{}
 
-	fmt.Printf("d.process.foo = %+v\n", d.process.foo)
-	fmt.Printf("d.process.Pid() = %+v\n", d.process.Pid())
+	fmt.Printf("d.process = %+v\n", d.process)
 
 	d.Run(d.process)
+
+	fmt.Printf("d.process = %+v\n", d.process)
+	fmt.Printf("d.process.foo = %+v\n", d.process.foo)
+
+	fmt.Printf("d.process.Pid() = %+v\n", d.process.Pid())
 }
