@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+)
 
 type Process interface {
 	Start()
@@ -27,10 +30,12 @@ func NewProcess() *Proc {
 
 type Daemon struct {
 	process *Proc
+	w       *io.PipeWriter
 }
 
 func (d *Daemon) Run(p Process) {
 	d.process = NewProcess()
+	_, d.w = io.Pipe()
 }
 
 func main() {
@@ -39,7 +44,12 @@ func main() {
 
 	fmt.Printf("d.process = %+v\n", d.process)
 
+	fmt.Printf("d.w = %+v\n", d.w)
+
 	d.Run(d.process)
+
+	fmt.Printf("d.w = %+v\n", d.w)
+	d.w.Close()
 
 	fmt.Printf("d.process = %+v\n", d.process)
 	fmt.Printf("d.process.foo = %+v\n", d.process.foo)
