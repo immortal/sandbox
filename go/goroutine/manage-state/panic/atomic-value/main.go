@@ -4,6 +4,7 @@ package main
 import (
 	"fmt"
 	"sync/atomic"
+	"time"
 )
 
 type test struct {
@@ -17,7 +18,8 @@ func (t *test) run() {
 		case v := <-t.ch:
 			fmt.Printf("%+v, foo=%+v\n", v, t.Load())
 			t.Store(false)
-		default:
+		case <-time.After(time.Second):
+			fmt.Println("running task")
 		}
 	}
 }
