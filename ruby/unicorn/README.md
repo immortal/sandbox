@@ -17,3 +17,7 @@ Test:
 Follow pid:
 
     $ ./immortal -l /tmp/test.log -logger "logger -t unicorn" -f ./unicorn.pid  bundle exec unicorn -c unicorn.rb
+
+Watch:
+
+    $ watch -n 0.1 "pstree -s unicorn\.rb"
