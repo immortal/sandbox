@@ -2,34 +2,46 @@ package main
 
 import (
 	"fmt"
+	"os/exec"
 	"time"
 )
 
-func myFunc() error {
-	for i := 1; i < 10; i++ {
-		fmt.Printf("i = %+v\n", i)
-		if i%3 == 0 {
-			return fmt.Errorf("error")
-		}
+func Exec(done chan<- error) error {
+	cmd := exec.Command("./start")
+	if err := cmd.Start(); err != nil {
+		return err
 	}
+	go func() {
+		done <- cmd.Wait()
+	}()
 	return nil
 }
 
 func main() {
+	var (
+		run  = make(chan struct{}, 1)
+		done = make(chan error, 1)
+	)
 
-	run := make(chan struct{}, 1)
+	Exec(done)
 
-	run <- struct{}{}
 	for {
 		select {
 		case <-run:
-			err := myFunc()
+			err := Exec(done)
 			if err != nil {
-				time.AfterFunc(3*time.Second, func() {
-					run <- struct{}{}
-				})
+				fmt.Println(err)
+				//	time.AfterFunc(3*time.Second, func() {
+				time.Sleep(time.Second)
+				run <- struct{}{}
+				//	})
 			}
 		default:
+			select {
+			case err := <-done:
+				fmt.Println(err)
+				run <- struct{}{}
+			}
 		}
 	}
 }
