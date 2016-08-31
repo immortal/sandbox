@@ -1,25 +1,19 @@
 package main
 
-import
-//	"fmt"
-
-(
+import (
 	"fmt"
 	"os/exec"
 )
 
 func main() {
 	done := make(chan error, 1) // buffer because goroutine might write to done<- before main goroutine starts to wait on <-done
-	done <- fmt.Errorf("2")
-	cmd := exec.Command("uname", "-a")
+	cmd := exec.Command("ls")
 	go func() {
-		err := cmd.Wait()
 		select {
-		case done <- err:
+		case done <- cmd.Wait():
 		default:
 		}
 	}()
-	// don't panic if buffered
-	err := <-done
-	fmt.Println(err)
+	cmd.Start()
+	fmt.Printf("done = %+v\n", <-done)
 }
