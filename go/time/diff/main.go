@@ -10,7 +10,7 @@ func main() {
 
 	diff := time.Since(start)
 	days := diff / (24 * time.Hour)
-	fmt.Printf("diff = %+v\n", diff)
+	fmt.Printf("diff = %s\n", diff)
 	fmt.Printf("days = %d\n", days)
 	hours := diff % (24 * time.Hour)
 	fmt.Printf("hours = %d\n", hours/time.Hour)
