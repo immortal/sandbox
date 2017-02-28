@@ -26,15 +26,12 @@ func main() {
 
 func run(ch chan<- error) {
 	cmd := exec.Command("sleep", "3")
-	//cmd.SysProcAttr = &syscall.SysProcAttr{
-	//Setpgid: true,
-	//}
+	if err := cmd.Start(); err != nil {
+		print(err.Error())
+		os.Exit(1)
+	}
+	fmt.Printf("Pid: %d\n", cmd.Process.Pid)
 	go func() {
-		if err := cmd.Start(); err != nil {
-			print(err.Error())
-			os.Exit(1)
-		}
-		fmt.Printf("Pid: %d\n", cmd.Process.Pid)
 		ch <- cmd.Wait()
 	}()
 
