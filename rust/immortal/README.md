@@ -1,3 +1,3 @@
-# Immortal ⭕
+# immortal.rs
 
-CLI tools for supervising and running commands.
+[rust](https://www.rust-lang.org/) version

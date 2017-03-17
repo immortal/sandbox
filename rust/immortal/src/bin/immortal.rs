@@ -6,7 +6,7 @@ use std::env;
 use clap::{Arg, App, SubCommand};
 
 fn main() {
-    let matches = App::new("immortalize")
+    let matches = App::new("immortal")
         .version(env!("CARGO_PKG_VERSION"))
         .about("Run a command forever")
         .arg(Arg::with_name("q")
