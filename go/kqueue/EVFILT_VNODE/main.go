@@ -13,7 +13,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fd, err := syscall.Open(os.Args[1], syscall.O_RDONLY, 0)
+	file, err := os.Open(os.Args[1])
 	if err != nil {
 		panic(err)
 	}
@@ -24,7 +24,7 @@ func main() {
 	}
 
 	ev1 := syscall.Kevent_t{
-		Ident:  uint64(fd),
+		Ident:  uint64(file.Fd()),
 		Filter: syscall.EVFILT_VNODE,
 		Flags:  syscall.EV_ADD | syscall.EV_ENABLE | syscall.EV_ONESHOT,
 		Fflags: syscall.NOTE_DELETE | syscall.NOTE_WRITE | syscall.NOTE_EXTEND | syscall.NOTE_ATTRIB | syscall.NOTE_LINK | syscall.NOTE_RENAME | syscall.NOTE_REVOKE,
@@ -54,6 +54,7 @@ func main() {
 				//				break Loop
 			}
 			if n > 0 {
+				fmt.Printf("n = %+v\n", n)
 				return
 			}
 		}
