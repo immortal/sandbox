@@ -36,7 +36,7 @@ func main() {
 	// wait for events
 	for {
 		// create kevent
-		events := make([]syscall.Kevent_t, 10)
+		events := make([]syscall.Kevent_t, 1)
 		n, err := syscall.Kevent(kq, []syscall.Kevent_t{ev1}, events, nil)
 		if err != nil {
 			log.Println("Error creating kevent")
