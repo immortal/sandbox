@@ -4,23 +4,19 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"syscall"
 )
 
-func main() {
-	if len(os.Args) != 2 {
-		fmt.Printf("usage: %s /path", os.Args[0])
-		os.Exit(1)
-	}
-
-	file, err := os.Open(os.Args[1])
+func WatchDir(dir string, ch chan<- string) {
+	file, err := os.Open(dir)
 	if err != nil {
-		panic(err)
+		log.Printf("err = %+v\n", err)
 	}
 
 	kq, err := syscall.Kqueue()
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("err = %+v\n", err)
 	}
 
 	ev1 := syscall.Kevent_t{
@@ -41,9 +37,80 @@ func main() {
 	// check if there was an event
 	for {
 		if n > 0 {
+			ch <- dir
 			return
 		}
 	}
+}
 
-	fmt.Println("fin")
+func Scandir(dir string) []string {
+	yml := []string{}
+	d, err := os.Open(dir)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer d.Close()
+
+	files, err := d.Readdir(-1)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	for _, file := range files {
+		if file.Mode().IsRegular() {
+			if filepath.Ext(file.Name()) == ".yml" {
+				yml = append(yml, file.Name())
+			}
+		}
+	}
+	return yml
+}
+
+func main() {
+	if len(os.Args) != 2 {
+		fmt.Printf("usage: %s /path", os.Args[0])
+		os.Exit(1)
+	}
+
+	dir := os.Args[1]
+
+	watchDir := make(chan string, 1)
+	watchFile := make(chan string, 1)
+
+	yml := Scandir(dir)
+	for _, y := range yml {
+		fmt.Printf("Watching  %s\n", y)
+		go WatchDir(filepath.Join(dir, y), watchFile)
+	}
+
+	WatchDir(dir, watchDir)
+
+	for {
+		select {
+		case dir := <-watchDir:
+			fmt.Printf("dir = %s\n", dir)
+			println("find *.yml")
+			yml2 := Scandir(dir)
+			// replace this with a map On2
+			for _, y := range yml2 {
+				var skip bool
+				for _, oy := range yml {
+					if oy == y {
+						skip = true
+						continue
+					}
+				}
+				if !skip {
+					fmt.Printf("Watching  %s\n", y)
+					go WatchDir(filepath.Join(dir, y), watchFile)
+				}
+			}
+			go WatchDir(dir, watchDir)
+		case file := <-watchFile:
+			fmt.Printf("file changed = %s\n", file)
+			go WatchDir(file, watchFile)
+		}
+	}
 }
