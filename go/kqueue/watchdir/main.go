@@ -32,22 +32,16 @@ func main() {
 		Udata:  nil,
 	}
 
-	//Loop:
-	// wait for events
+	// create kevent
+	events := make([]syscall.Kevent_t, 1)
+	n, err := syscall.Kevent(kq, []syscall.Kevent_t{ev1}, events, nil)
+	if err != nil {
+		log.Println("Error creating kevent")
+	}
+	// check if there was an event
 	for {
-		// create kevent
-		events := make([]syscall.Kevent_t, 1)
-		n, err := syscall.Kevent(kq, []syscall.Kevent_t{ev1}, events, nil)
-		if err != nil {
-			log.Println("Error creating kevent")
-		}
-		// check if there was an event
-		for {
-			fmt.Printf("n = %+v\n", n)
-			if n > 0 {
-				fmt.Printf("n = %+v\n", n)
-				return
-			}
+		if n > 0 {
+			return
 		}
 	}
 
