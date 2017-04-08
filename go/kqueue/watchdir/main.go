@@ -70,6 +70,17 @@ func Scandir(dir string) map[string]string {
 	return yml
 }
 
+func isFile(path string) bool {
+	f, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	if m := f.Mode(); !m.IsDir() && m.IsRegular() && m&400 != 0 {
+		return true
+	}
+	return false
+}
+
 func main() {
 	if len(os.Args) != 2 {
 		fmt.Printf("usage: %s /path", os.Args[0])
@@ -108,7 +119,15 @@ func main() {
 			go WatchDir(dir, watchDir)
 		case file := <-watchFile:
 			fmt.Printf("file changed = %s\n", file)
-			go WatchDir(file, watchFile)
+			if isFile(file) {
+				go WatchDir(file, watchFile)
+			} else {
+				fmt.Printf("removing = %s\n", filepath.Base(file))
+				if f, ok := yml[filepath.Base(file)]; ok {
+					fmt.Printf("removing = %s\n", f)
+					delete(yml, filepath.Base(file))
+				}
+			}
 		}
 		// to avoid err = too many open files,  Error creating kevent
 		time.Sleep(100 * time.Millisecond)
