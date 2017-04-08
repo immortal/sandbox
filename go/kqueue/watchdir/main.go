@@ -22,7 +22,7 @@ func WatchDir(dir string, ch chan<- string) {
 	ev1 := syscall.Kevent_t{
 		Ident:  uint64(file.Fd()),
 		Filter: syscall.EVFILT_VNODE,
-		Flags:  syscall.EV_ADD | syscall.EV_ENABLE | syscall.EV_ONESHOT,
+		Flags:  syscall.EV_ADD | syscall.EV_ENABLE | syscall.EV_ONESHOT | syscall.EV_DELETE,
 		Fflags: syscall.NOTE_DELETE | syscall.NOTE_WRITE | syscall.NOTE_EXTEND | syscall.NOTE_ATTRIB | syscall.NOTE_LINK | syscall.NOTE_RENAME | syscall.NOTE_REVOKE,
 		Data:   0,
 		Udata:  nil,
@@ -37,14 +37,15 @@ func WatchDir(dir string, ch chan<- string) {
 	// check if there was an event
 	for {
 		if n > 0 {
+			file.Close()
 			ch <- dir
 			return
 		}
 	}
 }
 
-func Scandir(dir string) []string {
-	yml := []string{}
+func Scandir(dir string) map[string]string {
+	yml := map[string]string{}
 	d, err := os.Open(dir)
 	if err != nil {
 		fmt.Println(err)
@@ -61,7 +62,7 @@ func Scandir(dir string) []string {
 	for _, file := range files {
 		if file.Mode().IsRegular() {
 			if filepath.Ext(file.Name()) == ".yml" {
-				yml = append(yml, file.Name())
+				yml[file.Name()] = filepath.Join(dir, file.Name())
 			}
 		}
 	}
@@ -80,33 +81,28 @@ func main() {
 	watchFile := make(chan string, 1)
 
 	yml := Scandir(dir)
-	for _, y := range yml {
-		fmt.Printf("Watching  %s\n", y)
-		go WatchDir(filepath.Join(dir, y), watchFile)
+	for f, p := range yml {
+		fmt.Printf("FIRST -- Watching  %s in path %s\n", f, p)
+		go WatchDir(p, watchFile)
 	}
 
-	WatchDir(dir, watchDir)
+	go WatchDir(dir, watchDir)
 
 	for {
+		println("loop..")
 		select {
 		case dir := <-watchDir:
 			fmt.Printf("dir = %s\n", dir)
 			println("find *.yml")
-			yml2 := Scandir(dir)
+			newFiles := Scandir(dir)
 			// replace this with a map On2
-			for _, y := range yml2 {
-				var skip bool
-				for _, oy := range yml {
-					if oy == y {
-						skip = true
-						continue
-					}
-				}
-				if !skip {
-					fmt.Printf("Watching  %s\n", y)
-					go WatchDir(filepath.Join(dir, y), watchFile)
+			for f, p := range newFiles {
+				if _, ok := yml[f]; !ok {
+					fmt.Printf("Watching new file %s in path %s\n", f, p)
+					go WatchDir(p, watchFile)
 				}
 			}
+			fmt.Printf("Nothing to add, watching again dir = %s\n", dir)
 			go WatchDir(dir, watchDir)
 		case file := <-watchFile:
 			fmt.Printf("file changed = %s\n", file)
