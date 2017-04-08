@@ -35,27 +35,30 @@ func main() {
 	//Loop:
 	// wait for events
 	for {
+		println("Creating event")
 		// create kevent
-		events := make([]syscall.Kevent_t, 1)
-		n, err := syscall.Kevent(kq, []syscall.Kevent_t{ev1}, events, nil)
+		events := []syscall.Kevent_t{ev1}
+		n, err := syscall.Kevent(kq, events, events, nil)
 		if err != nil {
 			log.Println("Error creating kevent")
 		}
+		if n != 1 {
+			fmt.Printf("n = %+v\n", n)
+			return
+		}
 		// check if there was an event
-		for i := 0; i < n; i++ {
-			log.Printf("Event [%d] -> %+v data: %#v", i, events[i], events[i].Data)
-
-			if events[i].Fflags == syscall.NOTE_RENAME {
-				print("renamed")
-			}
-			// Fflags:17
-			if events[i].Fflags == syscall.NOTE_DELETE || events[i].Fflags == 17 {
-				print("deleted")
-				//				break Loop
-			}
-			if n > 0 {
-				fmt.Printf("n = %+v\n", n)
-				return
+		for _, ev := range events {
+			switch ev.Fflags {
+			case syscall.NOTE_RENAME:
+				println("renamed")
+			case syscall.NOTE_DELETE:
+				println("deleted")
+			case syscall.NOTE_WRITE:
+				println("writed")
+			case syscall.NOTE_EXTEND | syscall.NOTE_WRITE:
+				println("modified")
+			default:
+				fmt.Printf("didn't catch ev.Flags = %+v\n", ev.Flags)
 			}
 		}
 	}
