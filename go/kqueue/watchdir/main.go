@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"syscall"
+	"time"
 )
 
 func WatchDir(dir string, ch chan<- string) {
@@ -22,7 +23,7 @@ func WatchDir(dir string, ch chan<- string) {
 	ev1 := syscall.Kevent_t{
 		Ident:  uint64(file.Fd()),
 		Filter: syscall.EVFILT_VNODE,
-		Flags:  syscall.EV_ADD | syscall.EV_ENABLE | syscall.EV_ONESHOT | syscall.EV_DELETE,
+		Flags:  syscall.EV_ADD | syscall.EV_ENABLE | syscall.EV_ONESHOT,
 		Fflags: syscall.NOTE_DELETE | syscall.NOTE_WRITE | syscall.NOTE_EXTEND | syscall.NOTE_ATTRIB | syscall.NOTE_LINK | syscall.NOTE_RENAME | syscall.NOTE_REVOKE,
 		Data:   0,
 		Udata:  nil,
@@ -99,6 +100,7 @@ func main() {
 			for f, p := range newFiles {
 				if _, ok := yml[f]; !ok {
 					fmt.Printf("Watching new file %s in path %s\n", f, p)
+					yml[f] = p
 					go WatchDir(p, watchFile)
 				}
 			}
@@ -108,5 +110,7 @@ func main() {
 			fmt.Printf("file changed = %s\n", file)
 			go WatchDir(file, watchFile)
 		}
+		// to avoid err = too many open files,  Error creating kevent
+		time.Sleep(100 * time.Millisecond)
 	}
 }
