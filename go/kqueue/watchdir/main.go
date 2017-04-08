@@ -10,6 +10,13 @@ import (
 )
 
 func WatchDir(dir string, ch chan<- string) {
+	fmt.Printf("watching  = %s\n", dir)
+	var fflags uint32 = syscall.NOTE_DELETE | syscall.NOTE_WRITE | syscall.NOTE_ATTRIB | syscall.NOTE_LINK | syscall.NOTE_RENAME | syscall.NOTE_REVOKE
+
+	if isFile(dir) {
+		fflags = syscall.NOTE_DELETE | syscall.NOTE_ATTRIB | syscall.NOTE_LINK | syscall.NOTE_RENAME | syscall.NOTE_REVOKE
+	}
+
 	file, err := os.Open(dir)
 	if err != nil {
 		log.Printf("err = %+v\n", err)
@@ -24,7 +31,7 @@ func WatchDir(dir string, ch chan<- string) {
 		Ident:  uint64(file.Fd()),
 		Filter: syscall.EVFILT_VNODE,
 		Flags:  syscall.EV_ADD | syscall.EV_ENABLE | syscall.EV_ONESHOT,
-		Fflags: syscall.NOTE_DELETE | syscall.NOTE_WRITE | syscall.NOTE_EXTEND | syscall.NOTE_ATTRIB | syscall.NOTE_LINK | syscall.NOTE_RENAME | syscall.NOTE_REVOKE,
+		Fflags: fflags,
 		Data:   0,
 		Udata:  nil,
 	}
@@ -112,6 +119,10 @@ func main() {
 				if _, ok := yml[f]; !ok {
 					fmt.Printf("Watching new file %s in path %s\n", f, p)
 					yml[f] = p
+					println("watching:")
+					for k, v := range yml {
+						println(k, v)
+					}
 					go WatchDir(p, watchFile)
 				}
 			}
