@@ -114,7 +114,7 @@ func main() {
 			fmt.Printf("dir = %s\n", dir)
 			println("find *.yml")
 			newFiles := Scandir(dir)
-			// possible o(2) complexity here, fine better way of doing this
+			// possible O(n^2) complexity here, find better way of doing this
 			for f, p := range newFiles {
 				if _, ok := yml[f]; !ok {
 					fmt.Printf("Watching new file %s in path %s\n", f, p)
