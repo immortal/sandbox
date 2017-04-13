@@ -8,7 +8,7 @@ Run:
 
 Immortalize it:
 
-    $ immortal -p ./unicorn.pid bundle exec unicorn -c unicorn.rb
+    $ immortal bundle exec unicorn -c unicorn.rb
 
 Test:
 
