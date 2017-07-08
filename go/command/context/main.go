@@ -2,10 +2,12 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"log"
 	"os"
 	"os/exec"
 	"os/signal"
+	"time"
 )
 
 func waitForExit() {
@@ -16,7 +18,9 @@ func waitForExit() {
 }
 
 func Run() {
-	cmd := exec.Command("www")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "www")
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Start()
