@@ -15,7 +15,7 @@ func main() {
 		c()
 	}(cancel)
 
-	if err := exec.CommandContext(ctx, "sleep", "5").Run(); err != nil {
-		// will be interrupted.
-	}
+	cmd := exec.CommandContext(ctx, "sleep", "5")
+	cmd.Start()
+	cmd.Wait()
 }
