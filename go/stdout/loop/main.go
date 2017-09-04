@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	for i := 1; i < 10; i++ {
+	for i := 0; ; i++ {
 		if i%3 == 0 {
 			fmt.Fprintf(os.Stderr, "STDERR i: %d\n", i)
 		} else {
