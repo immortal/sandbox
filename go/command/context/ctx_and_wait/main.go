@@ -9,7 +9,7 @@ import (
 
 func Run(quit chan struct{}) {
 	ctx, cancel := context.WithCancel(context.Background())
-	cmd := exec.CommandContext(ctx, "sleep", "300")
+	cmd := exec.CommandContext(ctx, "www")
 	err := cmd.Start()
 	if err != nil {
 		log.Fatal(err)
@@ -21,6 +21,7 @@ func Run(quit chan struct{}) {
 		if err != nil {
 			log.Println(err)
 		}
+		quit <- struct{}{}
 	}()
 
 	go func() {
@@ -40,4 +41,5 @@ func main() {
 		log.Println("closing via ctx")
 		ch <- struct{}{}
 	}
+	<-ch
 }
