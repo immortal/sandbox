@@ -9,9 +9,9 @@ import (
 )
 
 type Counter struct {
+	sync.RWMutex
 	count uint
 	flag  bool
-	mu    sync.Mutex
 	quit  chan struct{}
 	time  time.Time
 	wg    sync.WaitGroup
@@ -43,8 +43,8 @@ func (c *Counter) Listen() {
 }
 
 func (c *Counter) HandleStatus(w http.ResponseWriter, r *http.Request) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+	c.RLock()
+	defer c.RUnlock()
 	status := struct {
 		Count uint   `json:"count"`
 		Flag  bool   `json:"flag"`
@@ -70,11 +70,11 @@ func main() {
 	timeout := time.After(time.Minute)
 	for {
 		select {
-		case <-time.After(time.Second):
-			c.mu.Lock()
+		case <-time.After(time.Millisecond):
+			c.Lock()
 			c.count += 1
 			c.flag = !c.flag
-			c.mu.Unlock()
+			c.Unlock()
 		case <-timeout:
 			close(c.quit)
 			c.wg.Wait()
