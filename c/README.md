@@ -28,3 +28,5 @@ The output should be similar to this one:
 
     firstdaemon[3387]: First daemon started.
     firstdaemon[3387]: First daemon terminated.
+
+http://0pointer.de/public/systemd-man/daemon.html#New-Style%20Daemons
