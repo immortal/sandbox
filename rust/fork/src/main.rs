@@ -7,6 +7,7 @@ fn main() {
         println!("my pid {}", id());
         Command::new("sleep")
             .arg("300")
+            .current_dir("/")
             .output()
             .expect("failed to execute process");
     }
