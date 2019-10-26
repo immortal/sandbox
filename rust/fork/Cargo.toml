@@ -6,6 +6,3 @@ edition = "2018"
 
 [dependencies]
 fork = "0.1.4"
-
-[profile.release]
-debug = true
