@@ -5,4 +5,4 @@ authors = ["nbari <nbari@tequila.io>"]
 edition = "2018"
 
 [dependencies]
-fork = "0.1.4"
+fork = "0.1.8"
