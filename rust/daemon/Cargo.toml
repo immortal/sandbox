@@ -5,4 +5,4 @@ authors = ["nbari <nbari@tequila.io>"]
 edition = "2018"
 
 [dependencies]
-nix = "0.15.0"
+nix = "0.20.2"
